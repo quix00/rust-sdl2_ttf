@@ -2,18 +2,13 @@
 A binding for SDL2_ttf.
  */
 
-#![feature(macro_rules)]
-
 #![crate_type = "lib"]
-#![desc = "SDL2_ttf bindings and wrappers"]
-#![comment = "SDL2_ttf bindings and wrappers"]
-#![license = "MIT"]
 
 extern crate libc;
 extern crate sdl2;
 
 use libc::{c_int, c_long};
-use std::c_str::CString;
+use std::ffi::{CString, c_str_to_bytes};
 use std::num::FromPrimitive;
 use sdl2::surface::Surface;
 use sdl2::get_error;
@@ -55,30 +50,37 @@ fn color_to_c_color(color: Color) -> SDL_Color {
 
 /// Font Style
 bitflags!(flags FontStyle : c_int {
-    const StyleNormal = ffi::TTF_STYLE_NORMAL,
-    const StyleBold   = ffi::TTF_STYLE_BOLD,
-    const StyleItalic = ffi::TTF_STYLE_ITALIC,
-    const StyleUnderline = ffi::TTF_STYLE_UNDERLINE,
-    const StyleStrikeThrough = ffi::TTF_STYLE_STRIKETHROUGH
-})
+    const STYLE_NORMAL = ffi::TTF_STYLE_NORMAL,
+    const STYLE_BOLD   = ffi::TTF_STYLE_BOLD,
+    const STYLE_ITALIC = ffi::TTF_STYLE_ITALIC,
+    const STYLE_UNDERLINE = ffi::TTF_STYLE_UNDERLINE,
+    const STYLE_STRIKETHROUGH = ffi::TTF_STYLE_STRIKETHROUGH
+});
 
-#[deriving(Show, PartialEq, FromPrimitive)]
 pub enum Hinting {
-    HintingNormal = ffi::TTF_HINTING_NORMAL as int,
-    HintingLight  = ffi::TTF_HINTING_LIGHT  as int,
-    HintingMono   = ffi::TTF_HINTING_MONO   as int,
-    HintingNone   = ffi::TTF_HINTING_NONE   as int
+    HintingNormal = ffi::TTF_HINTING_NORMAL as isize,
+    HintingLight  = ffi::TTF_HINTING_LIGHT  as isize,
+    HintingMono   = ffi::TTF_HINTING_MONO   as isize,
+    HintingNone   = ffi::TTF_HINTING_NONE   as isize
+}
+
+impl Copy for Hinting {}
+
+impl FromPrimitive for Hinting {
+    fn from_u64(_: u64) -> Option<Hinting> { None }
+    fn from_i64(_: i64) -> Option<Hinting> { None }
 }
 
 /// Glyph Metrics
-#[deriving(PartialEq, Clone, Show)]
 pub struct GlyphMetrics {
-    pub minx: int,
-    pub maxx: int,
-    pub miny: int,
-    pub maxy: int,
-    pub advance: int
+    pub minx: isize,
+    pub maxx: isize,
+    pub miny: isize,
+    pub maxy: isize,
+    pub advance: isize
 }
+
+impl Copy for GlyphMetrics {}
 
 /// Returns the version of the dynamically linked SDL_ttf library
 pub fn get_linked_version() -> Version {
@@ -111,8 +113,7 @@ pub fn quit() {
 }
 
 /// The opaque holder of a loaded font.
-#[allow(raw_pointer_deriving)]
-#[deriving(PartialEq)]
+#[allow(raw_pointer_derive)]
 pub struct Font {
     raw: *const ffi::TTF_Font,
     owned: bool
@@ -136,10 +137,10 @@ impl Font {
         Font { raw: raw, owned: owned }
     }
 
-    pub fn from_file(filename: &Path, ptsize: int) -> SdlResult<Font> {
+    pub fn from_file(filename: &Path, ptsize: isize) -> SdlResult<Font> {
         //! Load file for use as a font, at ptsize size.
         unsafe {
-            let raw = ffi::TTF_OpenFont(filename.to_c_str().unwrap(), ptsize as c_int);
+            let raw = ffi::TTF_OpenFont(CString::from_slice(filename.as_vec()).as_ptr(), ptsize as c_int);
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -148,10 +149,10 @@ impl Font {
         }
     }
 
-    pub fn from_file_index(filename: &Path, ptsize: int, index: int) -> SdlResult<Font> {
+    pub fn from_file_index(filename: &Path, ptsize: isize, index: isize) -> SdlResult<Font> {
         //! Load file, face index, for use as a font, at ptsize size.
         unsafe {
-            let raw = ffi::TTF_OpenFontIndex(filename.to_c_str().unwrap(), ptsize as c_int, index as c_long);
+            let raw = ffi::TTF_OpenFontIndex(CString::from_slice(filename.as_vec()).as_ptr(), ptsize as c_int, index as c_long);
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -175,14 +176,14 @@ impl Font {
         }
     }
 
-    pub fn get_outline(&self) -> int {
+    pub fn get_outline(&self) -> isize {
         //! Get font outline width.
         unsafe {
-            ffi::TTF_GetFontOutline(self.raw) as int
+            ffi::TTF_GetFontOutline(self.raw) as isize
         }
     }
 
-    pub fn set_outline(&mut self, outline: int) {
+    pub fn set_outline(&mut self, outline: isize) {
         //! Set font outline width.
         unsafe {
             ffi::TTF_SetFontOutline(self.raw, outline as c_int)
@@ -217,38 +218,38 @@ impl Font {
         }
     }
 
-    pub fn height(&self) -> int {
+    pub fn height(&self) -> isize {
         //! Get font maximum total height.
         unsafe {
-            ffi::TTF_FontHeight(self.raw) as int
+            ffi::TTF_FontHeight(self.raw) as isize
         }
     }
 
-    pub fn ascent(&self) -> int {
+    pub fn ascent(&self) -> isize {
         //! Get font highest ascent (height above base).
         unsafe {
-            ffi::TTF_FontAscent(self.raw) as int
+            ffi::TTF_FontAscent(self.raw) as isize
         }
     }
 
-    pub fn descent(&self) -> int {
+    pub fn descent(&self) -> isize {
         //! Get font lowest descent (height below base).
         unsafe {
-            ffi::TTF_FontDescent(self.raw) as int
+            ffi::TTF_FontDescent(self.raw) as isize
         }
     }
 
-    pub fn line_skip(&self) -> int {
+    pub fn line_skip(&self) -> isize {
         //! Get font recommended line spacing.
         unsafe {
-            ffi::TTF_FontLineSkip(self.raw) as int
+            ffi::TTF_FontLineSkip(self.raw) as isize
         }
     }
 
-    pub fn faces(&self) -> int {
+    pub fn faces(&self) -> isize {
         //! Get the number of faces in a font.
         unsafe {
-            ffi::TTF_FontFaces(self.raw) as int
+            ffi::TTF_FontFaces(self.raw) as isize
         }
     }
 
@@ -267,7 +268,7 @@ impl Font {
             if cname.is_null() {
                 None
             } else {
-                Some(CString::new(cname, false).as_str().unwrap().into_string())
+                Some(String::from_utf8_lossy(c_str_to_bytes(&cname)).to_string())
             }
         }
     }
@@ -279,19 +280,19 @@ impl Font {
             if cname.is_null() {
                 None
             } else {
-                Some(CString::new(cname, false).as_str().unwrap().into_string())
+                Some(String::from_utf8_lossy(c_str_to_bytes(&cname)).to_string())
             }
         }
     }
 
-    pub fn index_of_char(&self, ch: char) -> Option<uint> {
+    pub fn index_of_char(&self, ch: char) -> Option<usize> {
         //! Get individual font glyph availability.
         unsafe {
             let ret = ffi::TTF_GlyphIsProvided(self.raw, ch as u16);
             if ret == 0 {
                 None
             } else {
-                Some(ret as uint)
+                Some(ret as usize)
             }
         }
     }
@@ -310,50 +311,44 @@ impl Font {
         if ret != 0 {
             None
         } else {
-            Some(GlyphMetrics { minx: minx as int, maxx: maxx as int,
-                                miny: miny as int, maxy: maxy as int,
-                                advance: advance as int })
+            Some(GlyphMetrics { minx: minx as isize, maxx: maxx as isize,
+                                miny: miny as isize, maxy: maxy as isize,
+                                advance: advance as isize })
         }
     }
 
-    pub fn size_of_bytes(&self, text: &[u8]) -> SdlResult<(int, int)> {
+    pub fn size_of_bytes(&self, text: &[u8]) -> SdlResult<(isize, isize)> {
         //! Get size of LATIN1 text string as would be rendered.
         let w = 0;
         let h = 0;
-        let ret = unsafe {
-            text.with_c_str(|ctext| {
-                    ffi::TTF_SizeText(self.raw, ctext, &w, &h)
-                })
-        };
-        if ret != 0 {
-            Err(get_error())
-        } else {
-            Ok((w as int, h as int))
+        unsafe {
+            let ret = ffi::TTF_SizeText(self.raw, CString::from_slice(text).as_ptr(), &w, &h);
+            if ret != 0 {
+                Err(get_error())
+            } else {
+                Ok((w as isize, h as isize))
+            }
         }
     }
 
-    pub fn size_of_str(&self, text: &str) -> SdlResult<(int, int)> {
+    pub fn size_of_str(&self, text: &str) -> SdlResult<(isize, isize)> {
         //! Get size of UTF8 text string as would be rendered.
         let w = 0;
         let h = 0;
-        let ret = unsafe {
-            text.with_c_str(|ctext| {
-                    ffi::TTF_SizeUTF8(self.raw, ctext, &w, &h)
-                })
-        };
-        if ret != 0 {
-            Err(get_error())
-        } else {
-            Ok((w as int, h as int))
+        unsafe {
+            let ret = ffi::TTF_SizeUTF8(self.raw, text.as_ptr() as *const i8, &w, &h);
+            if ret != 0 {
+                Err(get_error())
+            } else {
+                Ok((w as isize, h as isize))
+            }
         }
     }
 
     pub fn render_bytes_solid(&self, text: &[u8], fg: Color) -> SdlResult<Surface> {
         //! Draw LATIN1 text in solid mode.
         unsafe {
-            let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderText_Solid(self.raw, ctext, color_to_c_color(fg))
-                });
+            let raw = ffi::TTF_RenderText_Solid(self.raw, CString::from_slice(text).as_ptr(), color_to_c_color(fg));
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -365,9 +360,7 @@ impl Font {
     pub fn render_str_solid(&self, text: &str, fg: Color) -> SdlResult<Surface> {
         //! Draw UTF8 text in solid mode.
         unsafe {
-            let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderUTF8_Solid(self.raw, ctext, color_to_c_color(fg))
-                });
+            let raw = ffi::TTF_RenderUTF8_Solid(self.raw, text.as_ptr() as *const i8, color_to_c_color(fg));
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -391,9 +384,7 @@ impl Font {
     pub fn render_bytes_shaded(&self, text: &[u8], fg: Color, bg: Color) -> SdlResult<Surface> {
         //! Draw LATIN1 text in shaded mode.
         unsafe {
-            let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderText_Shaded(self.raw, ctext, color_to_c_color(fg), color_to_c_color(bg))
-                });
+            let raw = ffi::TTF_RenderText_Shaded(self.raw, CString::from_slice(text).as_ptr(), color_to_c_color(fg), color_to_c_color(bg));
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -405,9 +396,7 @@ impl Font {
     pub fn render_str_shaded(&self, text: &str, fg: Color, bg: Color) -> SdlResult<Surface> {
         //! Draw UTF8 text in shaded mode.
         unsafe {
-            let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderUTF8_Shaded(self.raw, ctext, color_to_c_color(fg), color_to_c_color(bg))
-                });
+            let raw = ffi::TTF_RenderUTF8_Shaded(self.raw, text.as_ptr() as *const i8, color_to_c_color(fg), color_to_c_color(bg));
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -431,9 +420,7 @@ impl Font {
     pub fn render_bytes_blended(&self, text: &[u8], fg: Color) -> SdlResult<Surface> {
         //! Draw LATIN1 text in blended mode.
         unsafe {
-            let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderText_Blended(self.raw, ctext, color_to_c_color(fg))
-                });
+            let raw = ffi::TTF_RenderText_Blended(self.raw, CString::from_slice(text).as_ptr(), color_to_c_color(fg));
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -445,9 +432,7 @@ impl Font {
     pub fn render_str_blended(&self, text: &str, fg: Color) -> SdlResult<Surface> {
         //! Draw UTF8 text in blended mode.
         unsafe {
-            let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderUTF8_Blended(self.raw, ctext, color_to_c_color(fg))
-                });
+            let raw = ffi::TTF_RenderUTF8_Blended(self.raw, text.as_ptr() as *const i8, color_to_c_color(fg));
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -473,13 +458,13 @@ impl Font {
 /// Loader trait for RWops
 pub trait LoaderRWops {
     /// Load src for use as a font.
-    fn load_font(&self, ptsize: int) -> SdlResult<Font>;
+    fn load_font(&self, ptsize: isize) -> SdlResult<Font>;
     /// Load src for use as a font.
-    fn load_font_index(&self, ptsize: int, index: int) -> SdlResult<Font>;
+    fn load_font_index(&self, ptsize: isize, index: isize) -> SdlResult<Font>;
 }
 
 impl LoaderRWops for RWops {
-    fn load_font(&self, ptsize: int) -> SdlResult<Font> {
+    fn load_font(&self, ptsize: isize) -> SdlResult<Font> {
         let raw = unsafe {
             ffi::TTF_OpenFontRW(self.raw(), 0, ptsize as c_int)
         };
@@ -489,7 +474,7 @@ impl LoaderRWops for RWops {
             Ok(Font::from_ll(raw, true))
         }
     }
-    fn load_font_index(&self, ptsize: int, index: int) -> SdlResult<Font> {
+    fn load_font_index(&self, ptsize: isize, index: isize) -> SdlResult<Font> {
         let raw = unsafe {
             ffi::TTF_OpenFontIndexRW(self.raw(), 0, ptsize as c_int, index as c_long)
         };
