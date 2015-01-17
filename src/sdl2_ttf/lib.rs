@@ -2,8 +2,6 @@
 A binding for SDL2_ttf.
  */
 
-#![feature(macro_rules)]
-
 #![crate_type = "lib"]
 #![desc = "SDL2_ttf bindings and wrappers"]
 #![comment = "SDL2_ttf bindings and wrappers"]
@@ -60,7 +58,7 @@ bitflags!(flags FontStyle : c_int {
     const StyleItalic = ffi::TTF_STYLE_ITALIC,
     const StyleUnderline = ffi::TTF_STYLE_UNDERLINE,
     const StyleStrikeThrough = ffi::TTF_STYLE_STRIKETHROUGH
-})
+});
 
 #[deriving(Show, PartialEq, FromPrimitive)]
 pub enum Hinting {
