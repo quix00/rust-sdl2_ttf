@@ -3,9 +3,6 @@ A binding for SDL2_ttf.
  */
 
 #![crate_type = "lib"]
-#![desc = "SDL2_ttf bindings and wrappers"]
-#![comment = "SDL2_ttf bindings and wrappers"]
-#![license = "MIT"]
 
 extern crate libc;
 extern crate sdl2;
@@ -53,14 +50,13 @@ fn color_to_c_color(color: Color) -> SDL_Color {
 
 /// Font Style
 bitflags!(flags FontStyle : c_int {
-    const StyleNormal = ffi::TTF_STYLE_NORMAL,
-    const StyleBold   = ffi::TTF_STYLE_BOLD,
-    const StyleItalic = ffi::TTF_STYLE_ITALIC,
-    const StyleUnderline = ffi::TTF_STYLE_UNDERLINE,
-    const StyleStrikeThrough = ffi::TTF_STYLE_STRIKETHROUGH
+    const STYLE_NORMAL = ffi::TTF_STYLE_NORMAL,
+    const STYLE_BOLD   = ffi::TTF_STYLE_BOLD,
+    const STYLE_ITALIC = ffi::TTF_STYLE_ITALIC,
+    const STYLE_UNDERLINE = ffi::TTF_STYLE_UNDERLINE,
+    const STYLE_STRIKETHROUGH = ffi::TTF_STYLE_STRIKETHROUGH
 });
 
-#[deriving(Show, PartialEq, FromPrimitive)]
 pub enum Hinting {
     HintingNormal = ffi::TTF_HINTING_NORMAL as isize,
     HintingLight  = ffi::TTF_HINTING_LIGHT  as isize,
@@ -69,12 +65,11 @@ pub enum Hinting {
 }
 
 impl FromPrimitive for Hinting {
-    fn from_u64(n: u64) -> Option<Hinting> { None }
-    fn from_i64(n: i64) -> Option<Hinting> { None }
+    fn from_u64(_: u64) -> Option<Hinting> { None }
+    fn from_i64(_: i64) -> Option<Hinting> { None }
 }
 
 /// Glyph Metrics
-#[deriving(PartialEq, Clone, Show)]
 pub struct GlyphMetrics {
     pub minx: isize,
     pub maxx: isize,
@@ -114,8 +109,7 @@ pub fn quit() {
 }
 
 /// The opaque holder of a loaded font.
-#[allow(raw_pointer_deriving)]
-#[deriving(PartialEq)]
+#[allow(raw_pointer_derive)]
 pub struct Font {
     raw: *const ffi::TTF_Font,
     owned: bool
