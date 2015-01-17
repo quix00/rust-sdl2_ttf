@@ -57,6 +57,7 @@ bitflags!(flags FontStyle : c_int {
     const STYLE_STRIKETHROUGH = ffi::TTF_STYLE_STRIKETHROUGH
 });
 
+#[derive(Show, PartialEq, FromPrimitive, Copy)]
 pub enum Hinting {
     HintingNormal = ffi::TTF_HINTING_NORMAL as isize,
     HintingLight  = ffi::TTF_HINTING_LIGHT  as isize,
@@ -64,14 +65,8 @@ pub enum Hinting {
     HintingNone   = ffi::TTF_HINTING_NONE   as isize
 }
 
-impl Copy for Hinting {}
-
-impl FromPrimitive for Hinting {
-    fn from_u64(_: u64) -> Option<Hinting> { None }
-    fn from_i64(_: i64) -> Option<Hinting> { None }
-}
-
 /// Glyph Metrics
+#[derive(PartialEq, Clone, Show, Copy)]
 pub struct GlyphMetrics {
     pub minx: isize,
     pub maxx: isize,
@@ -79,8 +74,6 @@ pub struct GlyphMetrics {
     pub maxy: isize,
     pub advance: isize
 }
-
-impl Copy for GlyphMetrics {}
 
 /// Returns the version of the dynamically linked SDL_ttf library
 pub fn get_linked_version() -> Version {
@@ -113,6 +106,7 @@ pub fn quit() {
 }
 
 /// The opaque holder of a loaded font.
+#[derive(PartialEq)]
 #[allow(raw_pointer_derive)]
 pub struct Font {
     raw: *const ffi::TTF_Font,
