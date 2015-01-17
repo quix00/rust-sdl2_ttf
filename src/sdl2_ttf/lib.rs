@@ -68,6 +68,11 @@ pub enum Hinting {
     HintingNone   = ffi::TTF_HINTING_NONE   as isize
 }
 
+impl FromPrimitive for Hinting {
+    fn from_u64(n: u64) -> Option<Hinting> { None }
+    fn from_i64(n: i64) -> Option<Hinting> { None }
+}
+
 /// Glyph Metrics
 #[deriving(PartialEq, Clone, Show)]
 pub struct GlyphMetrics {
