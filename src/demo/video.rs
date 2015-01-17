@@ -7,14 +7,14 @@ static SCREEN_HEIGHT : int = 600;
 // fail when error
 macro_rules! trying(
     ($e:expr) => (match $e { Ok(e) => e, Err(e) => panic!("failed: {}", e) })
-)
+);
 
 // hadle the annoying Rect i32
 macro_rules! rect(
     ($x:expr, $y:expr, $w:expr, $h:expr) => (
         sdl2::rect::Rect::new($x as i32, $y as i32, $w as i32, $h as i32)
     )
-)
+);
 
 pub fn main(filename: &Path) {
     sdl2::init(sdl2::INIT_VIDEO);

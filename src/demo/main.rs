@@ -1,6 +1,5 @@
 #![crate_type = "bin"]
 
-#![feature(macro_rules)]
 extern crate sdl2;
 extern crate sdl2_ttf;
 
@@ -10,7 +9,8 @@ mod video;
 
 fn main() {
     let args = os::args();
-    println!("linked sdl2_ttf: {}", sdl2_ttf::get_linked_version());
+    let version = sdl2_ttf::get_linked_version();
+    println!("linked sdl2_ttf: {}.{}.{}", version.major, version.minor, version.patch);
     if args.len() < 2 {
         println!("Usage: ./demo font.[ttf|ttc|fon]")
     } else {
