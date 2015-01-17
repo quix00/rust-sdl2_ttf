@@ -64,6 +64,8 @@ pub enum Hinting {
     HintingNone   = ffi::TTF_HINTING_NONE   as isize
 }
 
+impl Copy for Hinting {}
+
 impl FromPrimitive for Hinting {
     fn from_u64(_: u64) -> Option<Hinting> { None }
     fn from_i64(_: i64) -> Option<Hinting> { None }
@@ -77,6 +79,8 @@ pub struct GlyphMetrics {
     pub maxy: isize,
     pub advance: isize
 }
+
+impl Copy for GlyphMetrics {}
 
 /// Returns the version of the dynamically linked SDL_ttf library
 pub fn get_linked_version() -> Version {
