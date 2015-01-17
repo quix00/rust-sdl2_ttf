@@ -11,7 +11,7 @@ extern crate libc;
 extern crate sdl2;
 
 use libc::{c_int, c_long};
-use std::c_str::CString;
+use std::ffi::{CString, c_str_to_bytes};
 use std::num::FromPrimitive;
 use sdl2::surface::Surface;
 use sdl2::get_error;
@@ -137,7 +137,7 @@ impl Font {
     pub fn from_file(filename: &Path, ptsize: isize) -> SdlResult<Font> {
         //! Load file for use as a font, at ptsize size.
         unsafe {
-            let raw = ffi::TTF_OpenFont(filename.to_c_str().unwrap(), ptsize as c_int);
+            let raw = ffi::TTF_OpenFont(CString::from_slice(filename.as_vec()).as_ptr(), ptsize as c_int);
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -149,7 +149,7 @@ impl Font {
     pub fn from_file_index(filename: &Path, ptsize: isize, index: isize) -> SdlResult<Font> {
         //! Load file, face index, for use as a font, at ptsize size.
         unsafe {
-            let raw = ffi::TTF_OpenFontIndex(filename.to_c_str().unwrap(), ptsize as c_int, index as c_long);
+            let raw = ffi::TTF_OpenFontIndex(CString::from_slice(filename.as_vec()).as_ptr(), ptsize as c_int, index as c_long);
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -265,7 +265,7 @@ impl Font {
             if cname.is_null() {
                 None
             } else {
-                Some(CString::new(cname, false).as_str().unwrap().into_string())
+                Some(String::from_utf8_lossy(c_str_to_bytes(&cname)).to_string())
             }
         }
     }
@@ -277,7 +277,7 @@ impl Font {
             if cname.is_null() {
                 None
             } else {
-                Some(CString::new(cname, false).as_str().unwrap().into_string())
+                Some(String::from_utf8_lossy(c_str_to_bytes(&cname)).to_string())
             }
         }
     }
@@ -318,15 +318,13 @@ impl Font {
         //! Get size of LATIN1 text string as would be rendered.
         let w = 0;
         let h = 0;
-        let ret = unsafe {
-            text.with_c_str(|ctext| {
-                    ffi::TTF_SizeText(self.raw, ctext, &w, &h)
-                })
-        };
-        if ret != 0 {
-            Err(get_error())
-        } else {
-            Ok((w as isize, h as isize))
+        unsafe {
+            let ret = ffi::TTF_SizeText(self.raw, CString::from_slice(text).as_ptr(), &w, &h);
+            if ret != 0 {
+                Err(get_error())
+            } else {
+                Ok((w as isize, h as isize))
+            }
         }
     }
 
@@ -334,24 +332,20 @@ impl Font {
         //! Get size of UTF8 text string as would be rendered.
         let w = 0;
         let h = 0;
-        let ret = unsafe {
-            text.with_c_str(|ctext| {
-                    ffi::TTF_SizeUTF8(self.raw, ctext, &w, &h)
-                })
-        };
-        if ret != 0 {
-            Err(get_error())
-        } else {
-            Ok((w as isize, h as isize))
+        unsafe {
+            let ret = ffi::TTF_SizeUTF8(self.raw, text.as_ptr() as *const i8, &w, &h);
+            if ret != 0 {
+                Err(get_error())
+            } else {
+                Ok((w as isize, h as isize))
+            }
         }
     }
 
     pub fn render_bytes_solid(&self, text: &[u8], fg: Color) -> SdlResult<Surface> {
         //! Draw LATIN1 text in solid mode.
         unsafe {
-            let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderText_Solid(self.raw, ctext, color_to_c_color(fg))
-                });
+            let raw = ffi::TTF_RenderText_Solid(self.raw, CString::from_slice(text).as_ptr(), color_to_c_color(fg));
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -363,9 +357,7 @@ impl Font {
     pub fn render_str_solid(&self, text: &str, fg: Color) -> SdlResult<Surface> {
         //! Draw UTF8 text in solid mode.
         unsafe {
-            let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderUTF8_Solid(self.raw, ctext, color_to_c_color(fg))
-                });
+            let raw = ffi::TTF_RenderUTF8_Solid(self.raw, text.as_ptr() as *const i8, color_to_c_color(fg));
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -389,9 +381,7 @@ impl Font {
     pub fn render_bytes_shaded(&self, text: &[u8], fg: Color, bg: Color) -> SdlResult<Surface> {
         //! Draw LATIN1 text in shaded mode.
         unsafe {
-            let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderText_Shaded(self.raw, ctext, color_to_c_color(fg), color_to_c_color(bg))
-                });
+            let raw = ffi::TTF_RenderText_Shaded(self.raw, CString::from_slice(text).as_ptr(), color_to_c_color(fg), color_to_c_color(bg));
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -403,9 +393,7 @@ impl Font {
     pub fn render_str_shaded(&self, text: &str, fg: Color, bg: Color) -> SdlResult<Surface> {
         //! Draw UTF8 text in shaded mode.
         unsafe {
-            let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderUTF8_Shaded(self.raw, ctext, color_to_c_color(fg), color_to_c_color(bg))
-                });
+            let raw = ffi::TTF_RenderUTF8_Shaded(self.raw, text.as_ptr() as *const i8, color_to_c_color(fg), color_to_c_color(bg));
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -429,9 +417,7 @@ impl Font {
     pub fn render_bytes_blended(&self, text: &[u8], fg: Color) -> SdlResult<Surface> {
         //! Draw LATIN1 text in blended mode.
         unsafe {
-            let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderText_Blended(self.raw, ctext, color_to_c_color(fg))
-                });
+            let raw = ffi::TTF_RenderText_Blended(self.raw, CString::from_slice(text).as_ptr(), color_to_c_color(fg));
             if raw.is_null() {
                 Err(get_error())
             } else {
@@ -443,9 +429,7 @@ impl Font {
     pub fn render_str_blended(&self, text: &str, fg: Color) -> SdlResult<Surface> {
         //! Draw UTF8 text in blended mode.
         unsafe {
-            let raw = text.with_c_str(|ctext| {
-                    ffi::TTF_RenderUTF8_Blended(self.raw, ctext, color_to_c_color(fg))
-                });
+            let raw = ffi::TTF_RenderUTF8_Blended(self.raw, text.as_ptr() as *const i8, color_to_c_color(fg));
             if raw.is_null() {
                 Err(get_error())
             } else {
