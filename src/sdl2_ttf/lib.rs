@@ -7,6 +7,9 @@ A binding for SDL2_ttf.
 extern crate libc;
 extern crate sdl2;
 
+#[macro_use]
+extern crate bitflags;
+
 use libc::{c_int, c_long};
 use std::ffi::{CString, c_str_to_bytes};
 use std::num::FromPrimitive;
