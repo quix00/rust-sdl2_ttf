@@ -11,7 +11,7 @@ extern crate sdl2;
 extern crate bitflags;
 
 use libc::{c_int, c_long};
-use std::ffi::{CString, c_str_to_bytes};
+use std::ffi::{c_str_to_bytes, CString};
 use std::num::FromPrimitive;
 use sdl2::surface::Surface;
 use sdl2::get_error;
@@ -109,8 +109,8 @@ pub fn quit() {
 }
 
 /// The opaque holder of a loaded font.
-#[derive(PartialEq)]
 #[allow(raw_pointer_derive)]
+#[derive(PartialEq)]
 pub struct Font {
     raw: *const ffi::TTF_Font,
     owned: bool
@@ -318,13 +318,14 @@ impl Font {
         //! Get size of LATIN1 text string as would be rendered.
         let w = 0;
         let h = 0;
-        unsafe {
-            let ret = ffi::TTF_SizeText(self.raw, CString::from_slice(text).as_ptr(), &w, &h);
-            if ret != 0 {
-                Err(get_error())
-            } else {
-                Ok((w as isize, h as isize))
-            }
+        let ret = unsafe {
+            let ctext = CString::from_slice(text).as_ptr();
+            ffi::TTF_SizeText(self.raw, ctext, &w, &h)
+        };
+        if ret != 0 {
+            Err(get_error())
+        } else {
+            Ok((w as isize, h as isize))
         }
     }
 
@@ -332,13 +333,14 @@ impl Font {
         //! Get size of UTF8 text string as would be rendered.
         let w = 0;
         let h = 0;
-        unsafe {
-            let ret = ffi::TTF_SizeUTF8(self.raw, CString::from_slice(text.as_bytes()).as_ptr(), &w, &h);
-            if ret != 0 {
-                Err(get_error())
-            } else {
-                Ok((w as isize, h as isize))
-            }
+        let ret = unsafe {
+            let ctext = CString::from_slice(text.as_bytes());
+            ffi::TTF_SizeUTF8(self.raw, ctext.as_ptr(), &w, &h)
+        };
+        if ret != 0 {
+            Err(get_error())
+        } else {
+            Ok((w as isize, h as isize))
         }
     }
 

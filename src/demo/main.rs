@@ -9,8 +9,7 @@ mod video;
 
 fn main() {
     let args = os::args();
-    let version = sdl2_ttf::get_linked_version();
-    println!("linked sdl2_ttf: {:?}", version);
+    println!("linked sdl2_ttf: {:?}", sdl2_ttf::get_linked_version());
     if args.len() < 2 {
         println!("Usage: ./demo font.[ttf|ttc|fon]")
     } else {
