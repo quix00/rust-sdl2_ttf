@@ -6,6 +6,7 @@ A binding for SDL2_ttf.
 
 extern crate libc;
 extern crate sdl2;
+extern crate "sdl2-sys" as sys;
 
 #[macro_use]
 extern crate bitflags;
@@ -17,7 +18,7 @@ use sdl2::surface::Surface;
 use sdl2::get_error;
 use sdl2::pixels;
 use sdl2::pixels::Color;
-use sdl2::pixels::ll::SDL_Color;
+use sys::pixels::SDL_Color;
 use sdl2::rwops::RWops;
 use sdl2::version::Version;
 use sdl2::SdlResult;

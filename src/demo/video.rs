@@ -1,8 +1,8 @@
 use sdl2;
 use sdl2_ttf;
 
-static SCREEN_WIDTH : isize = 800;
-static SCREEN_HEIGHT : isize = 600;
+static SCREEN_WIDTH : i32 = 800;
+static SCREEN_HEIGHT : i32 = 600;
 
 // fail when error
 macro_rules! trying(
@@ -34,22 +34,20 @@ pub fn main(filename: &Path) {
     let surface = trying!(font.render_str_blended("Hello Rust!", sdl2::pixels::Color::RGBA(255, 0, 0, 255)));
     let texture = trying!(renderer.create_texture_from_surface(&surface));
 
-    let _ = renderer.set_draw_color(sdl2::pixels::Color::RGBA(195, 217, 255, 255));
-    let _ = renderer.clear();
+    let _ = renderer.drawer().set_draw_color(sdl2::pixels::Color::RGBA(195, 217, 255, 255));
+    let _ = renderer.drawer().clear();
 
-    let (w, h) = match texture.query() {
-        Ok(q) => (q.width, q.height),
-        Err(err) => panic!(format!("Failed to query texture: {}", err))
-    };
-    let _ = renderer.copy(&texture, None, Some(rect!((SCREEN_WIDTH - w)/ 2, (SCREEN_HEIGHT - h)/ 2, w, h)));
+    let result = texture.query();
+    let (w, h) = (result.width, result.height);
+    let _ = renderer.drawer().copy(&texture, None, Some(rect!((SCREEN_WIDTH - w)/ 2, (SCREEN_HEIGHT - h)/ 2, w, h)));
 
-    renderer.present();
+    renderer.drawer().present();
 
     'main : loop {
         'event : loop {
             match sdl2::event::poll_event() {
-                sdl2::event::Event::Quit(_) => break 'main,
-                sdl2::event::Event::KeyDown(_, _, key, _, _, _) => {
+                sdl2::event::Event::Quit{..} => break 'main,
+                sdl2::event::Event::KeyDown{keycode: key, ..} => {
                     if key == sdl2::keycode::KeyCode::Escape {
                         break 'main
                     }

@@ -1,10 +1,11 @@
 extern crate sdl2;
+extern crate "sdl2-sys" as sys;
 
 use libc::{c_int, c_char, c_long, c_void, uint16_t, uint32_t};
-use sdl2::surface::ll::SDL_Surface;
-use sdl2::pixels::ll::SDL_Color;
-use sdl2::rwops::ll::SDL_RWops;
-use sdl2::version::ll::SDL_version;
+use sys::surface::SDL_Surface;
+use sys::pixels::SDL_Color;
+use sys::rwops::SDL_RWops;
+use sys::version::SDL_version;
 
 
 pub const TTF_STYLE_NORMAL        : c_int = 0x00;

@@ -17,6 +17,7 @@ path = "src/sdl2_ttf/lib.rs"
 [dependencies]
 
 sdl2 = "~0.0.3"
+sdl2-sys = "*"
 bitflags = "0.1"
 
 [[bin]]
