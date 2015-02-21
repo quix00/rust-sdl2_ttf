@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use sdl2;
 use sdl2_ttf;
 

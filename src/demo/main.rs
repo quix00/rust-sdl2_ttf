@@ -3,6 +3,7 @@
 extern crate sdl2;
 extern crate sdl2_ttf;
 
+use std::path::Path;
 use std::os;
 
 mod video;
@@ -13,6 +14,6 @@ fn main() {
     if args.len() < 2 {
         println!("Usage: ./demo font.[ttf|ttc|fon]")
     } else {
-        video::main(&Path::new(os::args()[1].to_string()));
+        video::main(&Path::new(os::args()[1].as_slice()));
     }
 }
