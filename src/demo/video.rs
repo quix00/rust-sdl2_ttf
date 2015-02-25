@@ -19,7 +19,7 @@ macro_rules! rect(
 );
 
 pub fn main(filename: &Path) {
-    sdl2::init(sdl2::INIT_VIDEO);
+    let context = sdl2::init(sdl2::INIT_VIDEO).unwrap();
     sdl2_ttf::init();
 
     let window = trying!(sdl2::video::Window::new(
@@ -44,20 +44,22 @@ pub fn main(filename: &Path) {
     let _ = renderer.drawer().copy(&texture, None, Some(rect!((SCREEN_WIDTH - w)/ 2, (SCREEN_HEIGHT - h)/ 2, w, h)));
 
     renderer.drawer().present();
+    let mut event_pump = context.event_pump();
 
     'main : loop {
         'event : loop {
-            match sdl2::event::poll_event() {
-                sdl2::event::Event::Quit{..} => break 'main,
-                sdl2::event::Event::KeyDown{keycode: key, ..} => {
-                    if key == sdl2::keycode::KeyCode::Escape {
-                        break 'main
+            for event in event_pump.poll_iter() {
+                match event {
+                    sdl2::event::Event::Quit{..} => break 'main,
+                    sdl2::event::Event::KeyDown{keycode: key, ..} => {
+                        if key == sdl2::keycode::KeyCode::Escape {
+                            break 'main
+                        }
                     }
+                    _ => {}
                 }
-                _ => {}
             }
         }
     }
     sdl2_ttf::quit();
-    sdl2::quit();
 }

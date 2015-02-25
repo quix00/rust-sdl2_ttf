@@ -17,16 +17,8 @@ path = "src/sdl2_ttf/lib.rs"
 [dependencies]
 
 bitflags = "0.1"
-
-[dependencies.sdl2]
-
-git = "https://github.com/nukep/rust-sdl2"
-branch = "fix/rust-nightly"
-
-[dependencies.sdl2-sys]
-
-git = "https://github.com/nukep/rust-sdl2"
-branch = "fix/rust-nightly"
+sdl2 = "*"
+sdl2-sys = "*"
 
 [[bin]]
 
