@@ -1,19 +1,21 @@
 #![crate_type = "bin"]
+#![feature(path)]
 
 extern crate sdl2;
 extern crate sdl2_ttf;
 
 use std::path::Path;
-use std::os;
+use std::env;
 
 mod video;
 
 fn main() {
-    let args = os::args();
+    let mut args = env::args();
     println!("linked sdl2_ttf: {}", sdl2_ttf::get_linked_version());
+
     if args.len() < 2 {
         println!("Usage: ./demo font.[ttf|ttc|fon]")
     } else {
-        video::main(&Path::new(os::args()[1].as_slice()));
+        video::main(&Path::new(&args.next().unwrap()));
     }
 }
