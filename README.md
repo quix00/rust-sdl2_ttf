@@ -1,7 +1,7 @@
 Rust-SDL2_ttf
 ===============
 
-[![Build Status](https://travis-ci.org/andelf/rust-sdl2_ttf.svg?branch=master)](https://travis-ci.org/andelf/rust-sdl2_ttf)
+[![Build Status](https://travis-ci.org/quix00/rust-sdl2_ttf.svg?branch=master)](https://travis-ci.org/quix00/rust-sdl2_ttf)
 
 Rust bindings for SDL2_ttf.
 
