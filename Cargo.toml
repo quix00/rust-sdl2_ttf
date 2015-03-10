@@ -26,7 +26,7 @@ branch = "texture_lifetimes"
 git = "https://github.com/quix00/rust-sdl2"
 branch = "texture_lifetimes"
 
-[[bin]]
+[[example]]
 
 name = "demo"
 path = "src/demo/main.rs"
