@@ -35,7 +35,7 @@ or
 
 ```
 [dependencies.sdl2_ttf]
-git = "https://github.com/andelf/rust-sdl2_ttf"
+git = "https://github.com/quix00/rust-sdl2_ttf"
 ```
 
 
@@ -43,5 +43,5 @@ Demo
 ----
 
 ```
-cargo run font.[ttf|ttc|fon]
+cargo run --example demo font.[ttf|ttc|fon]
 ```
