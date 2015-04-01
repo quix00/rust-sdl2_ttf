@@ -3,11 +3,11 @@ A binding for SDL2_ttf.
  */
 
 #![crate_type = "lib"]
-#![feature(libc, path, core)]
+#![feature(libc, core)]
 
 extern crate libc;
 extern crate sdl2;
-extern crate "sdl2-sys" as sys;
+extern crate sdl2_sys as sys;
 
 #[macro_use]
 extern crate bitflags;
