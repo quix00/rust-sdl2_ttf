@@ -1,5 +1,4 @@
 #![crate_type = "bin"]
-#![feature(path)]
 
 extern crate sdl2;
 extern crate sdl2_ttf;

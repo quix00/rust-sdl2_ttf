@@ -22,11 +22,11 @@ pub fn main(filename: &Path) {
     let context = sdl2::init(sdl2::INIT_VIDEO).unwrap();
     sdl2_ttf::init();
 
-    let window = trying!(sdl2::video::Window::new(
+    let window = trying!(sdl2::video::Window::new(&context,
             "rust-sdl2 demo: Video", sdl2::video::WindowPos::PosCentered,
             sdl2::video::WindowPos::PosCentered, SCREEN_WIDTH, SCREEN_HEIGHT, sdl2::video::OPENGL));
 
-    let renderer = trying!(sdl2::render::Renderer::from_window(
+    let mut renderer = trying!(sdl2::render::Renderer::from_window(
             window, sdl2::render::RenderDriverIndex::Auto, sdl2::render::ACCELERATED));
 
     // Load a font
