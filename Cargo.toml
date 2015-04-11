@@ -19,12 +19,12 @@ path = "src/sdl2_ttf/lib.rs"
 bitflags = "0.1"
 
 [dependencies.sdl2]
-git = "https://github.com/quix00/rust-sdl2"
-branch = "texture_lifetimes"
+git = "https://github.com/nukep/rust-sdl2"
+branch = "renderer"
 
 [dependencies.sdl2-sys]
-git = "https://github.com/quix00/rust-sdl2"
-branch = "texture_lifetimes"
+git = "https://github.com/nukep/rust-sdl2"
+branch = "renderer"
 
 [[example]]
 
