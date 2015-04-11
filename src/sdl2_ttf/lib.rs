@@ -63,7 +63,7 @@ bitflags!(flags FontStyle : c_int {
     const STYLE_STRIKETHROUGH = ffi::TTF_STYLE_STRIKETHROUGH
 });
 
-#[derive(Debug, PartialEq, FromPrimitive, Copy)]
+#[derive(Debug, PartialEq, FromPrimitive, Clone, Copy)]
 pub enum Hinting {
     HintingNormal = ffi::TTF_HINTING_NORMAL as isize,
     HintingLight  = ffi::TTF_HINTING_LIGHT  as isize,
