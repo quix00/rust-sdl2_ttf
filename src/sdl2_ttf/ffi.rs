@@ -18,7 +18,7 @@ pub const TTF_HINTING_NONE      : c_int = 3;
 
 pub type TTF_Font = c_void;
 extern "C" {
-    pub fn TTF_Linked_Version() -> SDL_version;
+    pub fn TTF_Linked_Version() -> *const SDL_version;
     pub fn TTF_ByteSwappedUNICODE(swapped: c_int);
     pub fn TTF_Init() -> c_int;
     pub fn TTF_OpenFont(file: *const c_char, ptsize: c_int) -> *const TTF_Font;

@@ -84,7 +84,7 @@ pub struct GlyphMetrics {
 /// Returns the version of the dynamically linked SDL_ttf library
 pub fn get_linked_version() -> Version {
     unsafe {
-        Version::from_ll(ffi::TTF_Linked_Version())
+        Version::from_ll(*ffi::TTF_Linked_Version())
     }
 }
 
