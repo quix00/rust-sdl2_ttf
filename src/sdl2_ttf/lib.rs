@@ -3,7 +3,7 @@ A binding for SDL2_ttf.
  */
 
 #![crate_type = "lib"]
-#![feature(libc, core)]
+#![feature(libc)]
 
 extern crate libc;
 extern crate sdl2;
@@ -15,7 +15,6 @@ extern crate bitflags;
 use std::path::Path;
 use libc::{c_int, c_long};
 use std::ffi::{CString, CStr};
-use std::num::FromPrimitive;
 use sdl2::surface::Surface;
 use sdl2::get_error;
 use sdl2::pixels;
@@ -63,12 +62,24 @@ bitflags!(flags FontStyle : c_int {
     const STYLE_STRIKETHROUGH = ffi::TTF_STYLE_STRIKETHROUGH
 });
 
-#[derive(Debug, PartialEq, FromPrimitive, Clone, Copy)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub enum Hinting {
     HintingNormal = ffi::TTF_HINTING_NORMAL as isize,
     HintingLight  = ffi::TTF_HINTING_LIGHT  as isize,
     HintingMono   = ffi::TTF_HINTING_MONO   as isize,
     HintingNone   = ffi::TTF_HINTING_NONE   as isize
+}
+
+impl From<i32> for Hinting {
+    fn from(i: i32) -> Hinting {
+        match i {
+            i if i == Hinting::HintingNormal as i32 => Hinting::HintingNormal,
+            i if i == Hinting::HintingLight as i32 => Hinting::HintingLight,
+            i if i == Hinting::HintingMono as i32 => Hinting::HintingMono,
+            i if i == Hinting::HintingNone as i32 => Hinting::HintingNone,
+            _ => panic!("Invalid")
+        }
+    }
 }
 
 /// Glyph Metrics
@@ -193,7 +204,7 @@ impl Font {
     pub fn get_hinting(&self) -> Hinting {
         //! Get freetype hinter setting.
         unsafe {
-            FromPrimitive::from_i32(ffi::TTF_GetFontHinting(self.raw)).unwrap()
+            From::from(ffi::TTF_GetFontHinting(self.raw))
         }
     }
 
