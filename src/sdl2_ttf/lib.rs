@@ -3,7 +3,6 @@ A binding for SDL2_ttf.
  */
 
 #![crate_type = "lib"]
-#![feature(libc)]
 
 extern crate libc;
 extern crate sdl2;
